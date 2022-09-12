@@ -1,3 +1,4 @@
+from datetime import datetime
 from pickle import STOP
 import socket
 import json
@@ -44,6 +45,15 @@ def serverMessage():
         print(f"{msg}\n")
 
 
+def addTimeStampToMessage(msg):
+    # first we are getting the date and time then converting it to timestamp
+    # then formatting the date and time
+    date_time = datetime.fromtimestamp(datetime.timestamp(datetime.now()))
+    str_date_time = date_time.strftime("%d-%m-%Y, %H:%M:%S")
+    msg += " \t  "+str_date_time
+    return msg
+
+
 connected = True
 while connected:
     thread = threading.Thread(target=serverMessage)
@@ -59,7 +69,7 @@ while connected:
         msg = json.dumps(json_object)
         sendMessage(msg)
         thread.join()
-        
+    msg = addTimeStampToMessage(msg)
     json_object = {'msg': msg}
     msg = json.dumps(json_object)
     sendMessage(msg)

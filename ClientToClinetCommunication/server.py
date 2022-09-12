@@ -40,9 +40,8 @@ def decodeMessage(str, client_address, client_connection):
         # for first connection stores the name of the user corresponding to the client address
         USERS_NAME_LIST[client_address] = client_object['name']
         USER_CONNECTION_LIST[client_address] = client_connection
-        print(ALL_MESSAGES)
         sendMessage(ALL_MESSAGES, client_connection)
-        return f"joined the server."
+        return f"[JOINED THE SERVER]"
     else:
         return client_object['msg']
 
