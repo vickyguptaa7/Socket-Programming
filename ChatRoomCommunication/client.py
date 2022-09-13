@@ -73,6 +73,7 @@ while connected:
         msg = json.dumps(json_object)
         sendMessage(msg)
         thread.join()
+        
     msg = addTimeStampToMessage(msg)
     json_object = {'msg': msg}
     msg = json.dumps(json_object)

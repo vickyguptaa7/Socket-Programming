@@ -18,18 +18,19 @@ ADDRESS = (SERVER, PORT)
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDRESS)
 
+# stores the user list who are connected to server
 user_list = {}
 
 # stores the chats of the each chat_rooms
 chat_rooms = {}
 
-ALL_MESSAGES = ""
 
-
+# send messages to particular client
 def sendMessage(msg, client_connection):
     client_connection.send(msg.encode(FORMAT))
 
 
+# braodcast the message to particular chat_rooms whose id is same with client chat room id
 def broadcastMessage(msg, client_address):
     target_chat_room_id = user_list[client_address]['chat_room_id']
     for user_address in user_list:
@@ -40,10 +41,14 @@ def broadcastMessage(msg, client_address):
         sendMessage(msg, user_list[user_address]['connection'])
 
 
+# decode that if it is first message from the user or not
+# if first we store the info of the user
+# other wise just forward the message
 def decodeMessage(str, client_address, client_connection):
     client_object = json.loads(str)
+
+    # for first connection stores the name of the user corresponding to the client address
     if client_object['msg'] == FIRST_CONNECTION:
-        # for first connection stores the name of the user corresponding to the client address
         global user_list
         user_list[client_address] = {
             'name': client_object['name'],
@@ -60,17 +65,20 @@ def decodeMessage(str, client_address, client_connection):
     else:
         return client_object['msg']
 
-
+# handle the request from the clients
 def handleClient(client_connection, client_address):
+    global chat_rooms
     print(f"[NEW CONNECTION] {client_address} connected.\n")
 
     connected = True
-    while connected:
+    while connected:    
         str = client_connection.recv(HEADER).decode(FORMAT)
         if len(str) == 0:
             continue
-        global chat_rooms
+        
         msg = decodeMessage(str, client_address, client_connection)
+        
+        # if client send dissconnect message the connection breaks
         if msg == DISCONNECT_MESSAGE:
             connected = False
             msg = f"{user_list[client_address]['name']} is offline now."
