@@ -14,6 +14,7 @@ PORT = 4000
 HEADER = 1024
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECTED!"
+FIRST_CONNECTION = "!FIRST_CONNECTION!"
 STOP_THREAD = False
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
@@ -28,7 +29,7 @@ def sendMessage(msg):
 
 
 user_name = input("Enter your name : ")
-json_object = {'name': user_name, 'msg': '!FIRST_CONNECTION!'}
+json_object = {'name': user_name, 'msg': FIRST_CONNECTION}
 
 msg = json.dumps(json_object)
 sendMessage(msg)
