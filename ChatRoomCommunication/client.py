@@ -2,12 +2,10 @@ from datetime import datetime
 import socket
 import json
 import os
-import sys
 import threading
-from time import sleep
 
-os.system('cls||clear')
 
+print("\033c")
 
 PORT = 4000
 HEADER = 1024
@@ -37,16 +35,25 @@ json_object = {'name': user_name,
 msg = json.dumps(json_object)
 sendMessage(msg)
 
+all_chats = f"_____[JOINED ROOM ID : {chat_room_id}]_____"
+
+
+def showChatMessages():
+    print("\033c")
+    print(all_chats)
+
 
 def serverMessage():
     global STOP_THREAD
+    global all_chats
     while not STOP_THREAD:
         msg = client.recv(HEADER).decode(FORMAT)
         if len(msg) == 0:
             continue
         if msg == DISCONNECT_MESSAGE:
             break
-        print(f"{msg}\n")
+        all_chats += "\n\n"+msg
+        showChatMessages()
 
 
 def addTimeStampToMessage(msg):
@@ -63,7 +70,6 @@ while connected:
     thread = threading.Thread(target=serverMessage)
     thread.start()
     msg = input()
-    print("")
     if msg == DISCONNECT_MESSAGE:
         # when program terminates the thread will also get terminates
         # To Close the working thread so that after program termination the thread is not active
@@ -73,10 +79,12 @@ while connected:
         msg = json.dumps(json_object)
         sendMessage(msg)
         thread.join()
-        
+
     msg = addTimeStampToMessage(msg)
+    all_chats += "\n\nYou : "+msg
     json_object = {'msg': msg}
     msg = json.dumps(json_object)
+    showChatMessages()
     sendMessage(msg)
 
 
