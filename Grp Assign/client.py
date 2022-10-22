@@ -29,13 +29,33 @@ sendMessage(msg)
 
 connected = True
 while connected:
-    msg = input("Send A Prime Co-Prime [Y/N] : ")
-    if msg == DISCONNECT_MESSAGE:
+    msg = input("Play a game [y/n]: ")
+
+    if (msg != 'y'):
+        if msg != 'n':
+            print("Invalid Option!")
+        msg = DISCONNECT_MESSAGE
         connected = False
+        json_object = {'msg': msg}
+        msg = json.dumps(json_object)
+        sendMessage(msg)
+        continue
+
+    json_object = {'msg': 'start'}
+    msg = json.dumps(json_object)
+    sendMessage(msg)
+
+    server_msg = client.recv(HEADER).decode('utf8')
+    print(f"Server : {server_msg}")
+
+    msg = input("Prime or Composite [p/c] : ")
+
     json_object = {'msg': msg}
     msg = json.dumps(json_object)
     sendMessage(msg)
-    server_msg = client.recv(HEADER).decode('utf8')
-    print(f"SERVER : {server_msg}")
 
+    server_msg = client.recv(HEADER).decode('utf8')
+    print(f"Server : {server_msg}")
+
+print("Connection Closed!")
 client.close()

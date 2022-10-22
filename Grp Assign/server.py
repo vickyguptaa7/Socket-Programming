@@ -1,8 +1,10 @@
-from curses.ascii import isalnum
+import random
 import socket
 import threading
 import json
 import os
+from xml.dom.expatbuilder import parseString
+from xml.etree.ElementTree import tostring
 
 os.system('cls||clear')
 
@@ -14,61 +16,61 @@ DISCONNECT_MESSAGE = "!DISCONNECTED!"
 FIRST_CONNECTION = "!FIRST_CONNECTION!"
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
-
-special_char = ["~", "`", "/", "\\", "?", ">", "<", ".",
-                "!", ":", ";", "|", "=", "+", "-", "*", "@", "#", ]
+MAX_SIZE = 1000001
 
 # creates a socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDRESS)
 
 user_list = {}
+isPrime = [True]*MAX_SIZE
+
+# precomputation of all prime and comprime
+def sieve_Of_Eratosthenes():
+    global isPrime
+    isPrime[0] = isPrime[1] = False
+    for i in range(2, MAX_SIZE):
+        j = i*i
+        while (j < MAX_SIZE):
+            isPrime[j] = False
+            j += i
 
 
 def sendMessage(msg, client_connection):
     client_connection.send(msg.encode(FORMAT))
 
 
-def check(msg):
-
-    try:
-        msg = int(msg)
-        if msg < 0:
-            return "-ve Integer"
-        elif msg > 0:
-            return "+ve Integer"
-        else:
-            return "Zero Integer"
-    except:
-        try:
-            msg = float(msg)
-            if msg > 0:
-                return "+ve Float"
-            elif msg < 0:
-                return "-ve Float"
-            else:
-                return "Zero Float"
-        except:
-            if (msg.isalpha()):
-                return "Alphabets"
-            elif (msg.isalnum()):
-                return "Alphanumeric"
-            else:
-                return "Special Characters"
-
-
 def decodeMessage(str, client_connection, client_address):
     client_object = json.loads(str)
     if client_object['msg'] == FIRST_CONNECTION:
         # for first connection stores the name of the user corresponding to the client address
-        global user_list
+        global user_list, isPrime
         user_list[client_address] = {
             "name":  client_object['name'],
-            "connection": client_connection,
+            "number": 2,
         }
         return f"joined the server."
     else:
-        sendMessage(check(client_object['msg']), client_connection)
+        if (client_object['msg'] == 'start'):
+            num = random.randrange(2, MAX_SIZE)
+            user_list[client_address]['number'] = int(num)
+            print(num)
+            num = f"{num}"
+            sendMessage(num, client_connection)
+        else:
+            num = user_list[client_address]['number']
+            if (client_object['msg'] == 'p'):
+                if (isPrime[num] == True):
+                    sendMessage("Your answer is correct!", client_connection)
+                else:
+                    sendMessage("Your answer is incorrect!", client_connection)
+            elif (client_object['msg'] == 'c'):
+                if (isPrime[num] == False):
+                    sendMessage("Your answer is correct!", client_connection)
+                else:
+                    sendMessage("Your answer is incorrect!", client_connection)
+            else:
+                sendMessage("Invalid Option!", client_connection)
         return client_object['msg']
 
 
@@ -93,6 +95,7 @@ def handleClient(client_connection, client_address):
 
 def start():
     server.listen(MAX_CLIENT)
+    sieve_Of_Eratosthenes()
     print(f"[LISTENING]  server is listening on {SERVER}\n")
     connected = True
     while connected:
