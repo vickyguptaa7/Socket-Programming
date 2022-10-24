@@ -6,6 +6,7 @@ os.system('cls||clear')
 
 
 PORT = 4000
+# size of data in bytes that can go in one packets
 HEADER = 1024
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECTED!"
