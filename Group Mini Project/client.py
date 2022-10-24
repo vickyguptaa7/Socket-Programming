@@ -1,9 +1,7 @@
 import socket
 import json
-import os
 
-os.system('cls||clear')
-
+print("\033c")
 
 PORT = 4000
 # size of data in bytes that can go in one packets
@@ -41,6 +39,8 @@ sendMessage(msg)
 
 connected = True
 while connected:
+    print("\033c")
+    print("_______[GAME_SERVER]________\n")
     msg = input("Play a game [y/n]: ")
 
     if (msg != 'y'):
@@ -73,6 +73,7 @@ while connected:
     # server response to the client wheter the answer is correct or not
     server_msg = client.recv(HEADER).decode('utf8')
     print(f"Server : {server_msg}")
+    input("Press Enter to continue...")
 
 # closing the connection fromt the server
 print("Connection Closed!")

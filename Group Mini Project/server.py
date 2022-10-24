@@ -2,9 +2,8 @@ import random
 import socket
 import threading
 import json
-import os
 
-os.system('cls||clear')
+print("\033c")
 
 PORT = 4000
 # size of data in bytes that can go in one packets
@@ -92,6 +91,8 @@ def decodeMessage(str, client_connection, client_address):
         return client_object['msg']
 
 # handle's client queries
+
+
 def handleClient(client_connection, client_address):
     print(f"[NEW CONNECTION] {client_address} connected.\n")
 
