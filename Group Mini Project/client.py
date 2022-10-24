@@ -10,32 +10,58 @@ FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECTED!"
 
 # get the server ip address
+
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 
 
 """
-Here we made a socket instance and passed it two parameters. The first parameter is AF_INET and the second one is SOCK_STREAM. AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.  
+Here we made a socket instance and passed it two parameters. The first parameter is AF_INET and the second one is SOCK_STREAM. AF_INET refers to the address-family ipv4. The SOCK_STREAM means connection-oriented TCP protocol.
 """
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# coneecting the client to the server
-client.connect(ADDRESS)
+try:
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error as err:
+    print(f"[UNABLE TO CREATE SOCKET] : {err}...\n")
+    exit(0)
+try:
+    # coneecting the client to the server
+    client.connect(ADDRESS)
+except socket.error as err:
+    print(f"[UNABLE TO CONNECT TO THE SERVER] : {err}...\n")
+    exit(0)
 
 
 # function to send message to the server
 def sendMessage(msg):
-    client.send(msg.encode(FORMAT))
+    json_object = {'msg': msg}
+    msg = json.dumps(json_object)
+    try:
+        client.send(msg.encode(FORMAT))
+    except socket.error as err:
+        print(f"[UNABLE TO SEND MESSAGE TO THE SERVER] : {err}...\n")
+        exit(0)
+
+
+def reciveMessage():
+    try:
+        server_msg = client.recv(HEADER).decode('utf8')
+    except socket.error as err:
+        print(f"[UNABLE TO RECIEVE MESSAGE FROM THE SERVER] : {err}...\n")
+        exit(0)
+    print(f"Server : {server_msg}")
+    return server_msg
 
 
 """
 This is the first message sent to the server from the client side to know that another client is connected 
 so we have to store the client information and don't ask the info again and again from the client side
 """
+
 user_name = input("Enter your name : ")
 json_object = {'name': user_name, 'msg': '!FIRST_CONNECTION!'}
 msg = json.dumps(json_object)
-sendMessage(msg)
+client.send(msg.encode(FORMAT))
 
 connected = True
 while connected:
@@ -50,29 +76,22 @@ while connected:
         # user don't want to play the game
         msg = DISCONNECT_MESSAGE
         connected = False
-        json_object = {'msg': msg}
-        msg = json.dumps(json_object)
         sendMessage(msg)
         continue
 
     # client response to the server that user wants to play the game
-    json_object = {'msg': 'start'}
-    msg = json.dumps(json_object)
-    sendMessage(msg)
+    sendMessage('start')
 
     # server response to the client with a question
-    server_msg = client.recv(HEADER).decode('utf8')
-    print(f"Server : {server_msg}")
+    server_msg = reciveMessage()
 
     # client response to the server to answer the question
     msg = input("Prime or Composite [p/c] : ")
-    json_object = {'msg': msg}
-    msg = json.dumps(json_object)
     sendMessage(msg)
 
     # server response to the client wheter the answer is correct or not
-    server_msg = client.recv(HEADER).decode('utf8')
-    print(f"Server : {server_msg}")
+    server_msg = reciveMessage()
+
     input("Press Enter to continue...")
 
 # closing the connection fromt the server
