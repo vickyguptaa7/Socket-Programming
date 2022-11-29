@@ -11,7 +11,7 @@ DISCONNECT_MESSAGE = "!DISCONNECTED!"
 
 # get the server ip address
 
-SERVER = "192.168.43.139"
+SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 
 
