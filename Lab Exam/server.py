@@ -1,10 +1,12 @@
 from curses.ascii import isalnum
 import socket
-import threading
 import json
 import os
 
 os.system('cls||clear')
+
+print("______________[SERVER]_______________")
+print("______Character And Word Count_______")
 
 PORT = 4000
 HEADER = 1024
@@ -16,9 +18,18 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 
 # creates a socket
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(ADDRESS)
+try:
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error as err:
+    print(f"[UNABLE TO CREATE SOCKET] : {err}...\n")
+    exit(0)
 
+
+try:
+    server.bind(ADDRESS)
+except socket.error as err:
+    print(f"[UNABLE TO BIND TO THE SPECIFIC IP AND PORT] : {err}...\n")
+    exit(0)
 user_list = {}
 
 

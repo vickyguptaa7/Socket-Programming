@@ -5,6 +5,9 @@ import os
 os.system('cls||clear')
 
 
+print("______________[CLIENT]_______________")
+print("______Character And Word Count_______")
+
 PORT = 4000
 HEADER = 1024
 FORMAT = "utf-8"
@@ -13,8 +16,19 @@ SERVER = socket.gethostbyname(socket.gethostname())
 ADDRESS = (SERVER, PORT)
 
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDRESS)
+try:
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+except socket.error as err:
+    print(f"[UNABLE TO CREATE SOCKET] : {err}...\n")
+    exit(0)
+
+
+try:
+    # coneecting the client to the server
+    client.connect(ADDRESS)
+except socket.error as err:
+    print(f"[UNABLE TO CONNECT TO THE SERVER] : {err}...\n")
+    exit(0)
 
 
 def sendMessage(msg):
