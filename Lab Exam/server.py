@@ -6,7 +6,7 @@ import os
 os.system('cls||clear')
 
 print("______________[SERVER]_______________")
-print("______Character And Word Count_______")
+print("______Character And Word Count_______\n")
 
 PORT = 4000
 HEADER = 1024
